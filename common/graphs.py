@@ -7,6 +7,9 @@ class Vertex:
     def __init__(self, name):
         self.name = name
 
+    def __eq__(self, other):
+        return self.name == other.name
+
     def __str__(self):
         return self.name
 
@@ -17,16 +20,22 @@ class Edge:
     """
         Create a edge. This is a directed edge and if undirected edge is required 2 must be manually created.
     """
-    def __init__(self, source_vertex : Vertex, destination_vertex:Vertex):
+    def __init__(self, source_vertex : Vertex, destination_vertex:Vertex, undirected:bool = True):
         self.source_vertex = source_vertex
         self.destination_vertex = destination_vertex
         self.name = source_vertex.name + '-' + destination_vertex.name
-    
+        self.undirected = undirected
     def __str__(self):
-        return f"{self.source_vertex} <--> {self.destination_vertex}"
+        if self.undirected:
+            return f"{self.source_vertex} <--> {self.destination_vertex}"
+        else:
+            return f"{self.source_vertex} --> {self.destination_vertex}"
     
     def __repr__(self):
-        return f"{self.source_vertex} <--> {self.destination_vertex}"
+        if self.undirected:
+            return f"{self.source_vertex} <--> {self.destination_vertex}"
+        else:
+            return f"{self.source_vertex} --> {self.destination_vertex}"
 
 class Graph:
 
@@ -59,7 +68,8 @@ class Graph:
 
         E = Edge(
             self.vertexes[source_vertex], 
-            self.vertexes[destination_vertex]
+            self.vertexes[destination_vertex],
+            self.undirected
         )
         if E.name in self.all_edges.keys():
             raise ValueError(f"Edge '{E}' is already a part of the graph")
@@ -70,6 +80,7 @@ class Graph:
             other_edge = Edge(
                 self.vertexes[destination_vertex],
                 self.vertexes[source_vertex],
+                self.undirected
             )
             self.all_edges[other_edge.name] = other_edge
     
@@ -90,7 +101,7 @@ class Graph:
                 self.all_edges.pop(other_edge_name)
         except KeyError as e:
             raise Exception(f"Edge {edge_name} not found")
-
+    
     def __str__(self) -> str:
         return self.name
     
